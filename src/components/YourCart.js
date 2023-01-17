@@ -192,8 +192,10 @@ class YourCart extends HTMLElement {
 
   deleteItem(index) {
     const itemCart = this.shadowRoot.querySelector(`.index-${index}`);
+    const totalItems = this.shadowRoot.querySelector(`.index-${index} .total-items`).innerText;
+
     itemCart.remove();
-    this.updatePrices(index, false);
+    this.updatePrices(index, false, this.getUnformat(totalItems));
   }
 
   addItem(index) {
@@ -233,10 +235,10 @@ class YourCart extends HTMLElement {
     return parseFloat(PLATES[index].price);
   }
 
-  updatePrices(index, inc = true) {
+  updatePrices(index, inc = true, totalItems = 1) {
     const price = this.getPrice(index);
     let subTotal = this.getUnformat(this.prices[0].textContent);
-    if (inc) { subTotal += price; } else { subTotal -= price; }
+    if (inc) { subTotal += price; } else { subTotal -= (price * totalItems); }
     const tax = subTotal * 0.1;
     const total = subTotal + tax;
 
