@@ -1,0 +1,50 @@
+[
+  {
+    "name": "French Fries with Ketchup",
+    "price": "4.50",
+    "image": "french-fries",
+    "color": "#7ab3f3"
+  },
+  {
+    "name": "Salmon and Vegetables",
+    "price": "5.12",
+    "image": "salmon-vegetables",
+    "color": "#e979b2"
+  },
+  {
+    "name": "Spaghetti with Sauce",
+    "price": "7.82",
+    "image": "spaghetti-meat-sauce",
+    "color": "#d7d7f9"
+  },
+  {
+    "name": "Bacon with Eggs",
+    "price": "2.23",
+    "image": "bacon-eggs",
+    "color": "#78f7bb"
+  },
+  {
+    "name": "Chicken and Salad",
+    "price": "5.03",
+    "image": "chicken-salad",
+    "color": "#7ab3f3"
+  },
+  {
+    "name": "Fish Sticks and Chips",
+    "price": "3.84",
+    "image": "fish-sticks-fries",
+    "color": "#e979b2"
+  },
+  {
+    "name": "Ravioli",
+    "price": "2.94",
+    "image": "ravioli",
+    "color": "#d7d7f9"
+  },
+  {
+    "name": "Tortellini",
+    "price": "4.99",
+    "image": "tortellini",
+    "color": "#78f7bb"
+  }
+]
