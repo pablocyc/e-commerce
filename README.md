@@ -1,3 +1,9 @@
+# Demo
+
+<p align="center">
+  <img src="./public/gifs/ecommerce.gif">
+</p>
+
 # Brief
 
 In this project, we're creating an eCommerce component.
