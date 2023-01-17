@@ -4,13 +4,45 @@ class YourCart extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.subTotal = 0;
-    this.tax = 0;
-    this.total = 0;
   }
 
   handleEvent(event) {
+    if (event.type === "click") {
+      const button = event.composedPath()[1].dataset.button;
 
+      if (button) {
+        const textImg = event.composedPath()[4].childNodes[1].lastElementChild;
+        const textBtn = event.composedPath()[2].childNodes[3];
+        const priceItem = event.composedPath()[2].childNodes[7];
+
+        let num = parseInt(textImg.innerText);
+        const index = button.split("-")[1];
+        let itemTotalPrice = this.getUnformat(priceItem.innerText);
+        if (button.split("-")[0] === "right") {
+          num += 1;
+          this.updatePrices(index);
+          itemTotalPrice += this.getPrice(index);
+        }
+        if (button.split("-")[0] === "left") {
+          num -= 1;
+          if (num <= 0) {
+            this.deleteItem(index);
+            const itemEvent = new CustomEvent("item-delete", {
+              detail: { from: "Cart", index },
+              bubbles: true,
+              composed: true
+            });
+            this.dispatchEvent(itemEvent);
+            return;
+          }
+          this.updatePrices(index, false);
+          itemTotalPrice -= this.getPrice(index);
+        }
+        priceItem.innerText = this.getFormat(itemTotalPrice);
+        textImg.innerText = num.toString();
+        textBtn.innerText = num.toString();
+      }
+    }
   }
 
   static get styles() {
@@ -84,7 +116,7 @@ class YourCart extends HTMLElement {
       .main {
         display: flex;
         justify-content: space-between;
-        gap: 1.5rem;
+        gap: 0.8rem;
         width: 85%;
         margin: 0 auto;
       }
@@ -112,7 +144,7 @@ class YourCart extends HTMLElement {
         background: black;
         position: absolute;
         color: white;
-        top: 17%;
+        top: 14%;
         left: 25%;
       }
 
@@ -150,35 +182,40 @@ class YourCart extends HTMLElement {
   }
 
   setItem(index, status) {
-    const price = parseFloat(PLATES[index].price);
-    let subTotal = this.getUnformat(this.prices[0].textContent);
     if (status) {
-      this.addItem(index, price);
-      subTotal += price;
-      this.updatePrices(subTotal);
+      this.addItem(index);
+      this.updatePrices(index);
+    } else {
+      this.deleteItem(index);
     }
   }
 
-  addItem(index, price) {
-    const priceFormat = this.getFormat(price);
+  deleteItem(index) {
+    const itemCart = this.shadowRoot.querySelector(`.index-${index}`);
+    itemCart.remove();
+    this.updatePrices(index, false);
+  }
+
+  addItem(index) {
+    const priceFormat = this.getFormat(PLATES[index].price);
     const template = document.createElement("template");
 
     template.innerHTML = /* html */`
-      <div class="plate-shop">
+      <div class="plate-shop index-${index}">
         <div class="main">
           <div class="image">
             <img src="images/plate__${PLATES[index].image}.png" alt="">
-            <div class="quantity-image">1</div>
+            <div class="quantity-image total-items">1</div>
           </div>
           <div class="description">
             <h2 class="title-plate">${PLATES[index].name}</h2>
             <p class="price-unit">${priceFormat}</p>
             <div class="quantity">
-              <button>
+              <button data-button="left-${index}">
                 <img src="images/btn-left.svg" alt="button left">
               </button>
-              <span class="total-quantity">1</span>
-              <button>
+              <span class="total-quantity total-items">1</span>
+              <button data-button="right-${index}">
                 <img src="images/btn-right.svg" alt="button right">
               </button>
               <span class="total-price">${priceFormat}</span>
@@ -192,7 +229,14 @@ class YourCart extends HTMLElement {
     this.cartItems.appendChild(html);
   }
 
-  updatePrices(subTotal) {
+  getPrice(index) {
+    return parseFloat(PLATES[index].price);
+  }
+
+  updatePrices(index, inc = true) {
+    const price = this.getPrice(index);
+    let subTotal = this.getUnformat(this.prices[0].textContent);
+    if (inc) { subTotal += price; } else { subTotal -= price; }
     const tax = subTotal * 0.1;
     const total = subTotal + tax;
 
@@ -213,6 +257,7 @@ class YourCart extends HTMLElement {
   init() {
     this.cartItems = this.shadowRoot.querySelector(".cart-items");
     this.prices = this.shadowRoot.querySelectorAll(".price");
+    this.cartItems.addEventListener("click", this);
   }
 
   connectedCallback() {

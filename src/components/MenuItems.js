@@ -1,6 +1,6 @@
 import PLATES from "../data/plastes.json";
 
-class PicketItems extends HTMLElement {
+class MenuItems extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -11,7 +11,7 @@ class PicketItems extends HTMLElement {
       const action = event.composedPath()[0].dataset.action;
       let element = event.composedPath()[0];
       let check = true;
-      if (action === "cart" || action === "cart-text") {
+      if (action) {
         if (action === "cart-text") {
           element = event.composedPath()[1];
         }
@@ -31,7 +31,6 @@ class PicketItems extends HTMLElement {
           check = false;
           element.style.setProperty("--primary-color", "#6b00f5");
           element.innerText = "Add to Cart";
-          iconImage.remove();
         }
         const itemEvent = new CustomEvent("item-selected", {
           detail: { from: "Menu", index, status: check },
@@ -138,6 +137,12 @@ class PicketItems extends HTMLElement {
     `;
   }
 
+  unCheckButton(index) {
+    const button = this.shadowRoot.querySelector(`.index-${index}`);
+    button.style.setProperty("--primary-color", "#6b00f5");
+    button.innerText = "Add to Cart";
+  }
+
   setItems() {
     let html = "";
     PLATES.forEach((plate, index) => {
@@ -168,7 +173,7 @@ class PicketItems extends HTMLElement {
 
   render() {
     this.shadowRoot.innerHTML = /* html */`
-    <style>${PicketItems.styles}</style>
+    <style>${MenuItems.styles}</style>
     <div class="container">
       <h1 class="title">To Go Menu</h1>
       <div class="plates-items">
@@ -178,4 +183,4 @@ class PicketItems extends HTMLElement {
   }
 }
 
-customElements.define("picket-items", PicketItems);
+customElements.define("menu-items", MenuItems);
